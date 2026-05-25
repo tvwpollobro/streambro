@@ -1,32 +1,8 @@
 const express = require('express');
-const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Directorio de servidores con extensiones de auxilio (Audio Latino)
-const DIRECTORIO_SITIOS = {
-    cinecalidad: [
-        'https://www.cinecalidad.gg',
-        'https://www.cinecalidad.to',
-        'https://www.cinecalidad.is'
-    ],
-    cuevana: [
-        'https://cuevana3.ch',
-        'https://cuevana.biz',
-        'https://cuevana3.io'
-    ],
-    pelisplus: [
-        'https://pelisplus.to',
-        'https://pelisplus.so',
-        'https://pelisplus.lat'
-    ],
-    gnula: [
-        'https://gnula.nu',
-        'https://gnula.se'
-    ]
-};
-
-// RUTA 1: Menú Principal con Presentación Especial para Aye ❤️
+// RUTA PRINCIPAL: Interfaz para la TV con presentación especial para Aye ❤️
 app.get('/', (req, res) => {
     res.send(`
     <!DOCTYPE html>
@@ -34,7 +10,7 @@ app.get('/', (req, res) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Streamflix TV</title>
+        <title>StreamBro</title>
         <style>
             body { background-color: #111; color: white; font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 0; overflow: hidden; }
             
@@ -68,7 +44,7 @@ app.get('/', (req, res) => {
                 padding: 25px 30px; font-size: 22px; font-weight: bold; border-radius: 10px; 
                 cursor: pointer; width: 220px; transition: 0.2s; text-decoration: none; display: inline-block; box-sizing: border-box;
             }
-            /* Enfoque para el control remoto de la TV */
+            /* Enfoque visual para usar con las flechas del teclado o control remoto */
             .boton-tv:focus, .boton-tv.focused { 
                 border-color: #fff; background-color: #E50914; transform: scale(1.08); outline: none; box-shadow: 0 0 15px #E50914;
             }
@@ -77,22 +53,22 @@ app.get('/', (req, res) => {
     <body>
 
         <div id="splash">
-            <h2>Cargando Streamflix...</h2>
+            <h2>Cargando StreamBro...</h2>
             <h3 style="font-weight: 300; color: #aaa; margin-bottom: 30px;">Especial para Aye <span class="corazon">❤️</span></h3>
         </div>
 
         <div class="main-content" id="contenido-tv">
-            <h1>STREAMFLIX - SELECCIONÁ UN SERVIDOR</h1>
+            <h1>STREAMBRO - SELECCIONÁ UN SERVIDOR</h1>
             <div class="grid">
-                <a href="/ver?sitio=cinecalidad" class="boton-tv focused" tabindex="1">CineCalidad</a>
-                <a href="/ver?sitio=cuevana" class="boton-tv" tabindex="2">Cuevana 3</a>
-                <a href="/ver?sitio=pelisplus" class="boton-tv" tabindex="3">PelisPlus</a>
-                <a href="/ver?sitio=gnula" class="boton-tv" tabindex="4">GNula</a>
+                <a href="https://www.cinecalidad.gg" class="boton-tv focused" tabindex="1">CineCalidad</a>
+                <a href="https://cuevana3.ch" class="boton-tv" tabindex="2">Cuevana 3</a>
+                <a href="https://pelisplus.to" class="boton-tv" tabindex="3">PelisPlus</a>
+                <a href="https://gnula.nu" class="boton-tv" tabindex="4">GNula</a>
             </div>
         </div>
 
         <script>
-            // Manejo del tiempo de la intro (4.5 segundos)
+            // Control del tiempo de la pantalla de bienvenida (4.5 segundos)
             setTimeout(() => {
                 const splash = document.getElementById('splash');
                 const contenido = document.getElementById('contenido-tv');
@@ -103,7 +79,7 @@ app.get('/', (req, res) => {
                 setTimeout(() => { splash.style.display = 'none'; }, 1500);
             }, 4500);
 
-            // Control de navegación por flechas para el control remoto
+            // Sistema de navegación por flechas (Izquierda / Derecha)
             let botones = document.querySelectorAll('.boton-tv');
             let idx = 0;
             document.addEventListener('keydown', (e) => {
@@ -121,44 +97,4 @@ app.get('/', (req, res) => {
     `);
 });
 
-// RUTA 2: El purificador inteligente con sistema anticaídas
-app.get('/ver', async (req, res) => {
-    const sitioElegido = req.query.sitio;
-    const dominiosDisponibles = DIRECTORIO_SITIOS[sitioElegido];
-
-    if (!dominiosDisponibles) return res.status(404).send("Sitio no válido.");
-
-    let htmlLimpio = null;
-
-    // Bucle para probar extensiones de auxilio si una se cae
-    for (const url of dominiosDisponibles) {
-        try {
-            const respuesta = await axios.get(url, {
-                headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
-                timeout: 6000 // 6 segundos de espera antes de saltar al siguiente dominio
-            });
-            htmlLimpio = respuesta.data;
-            break; 
-        } catch (error) {
-            console.log(`Error en ${url}, probando extensión alternativa...`);
-        }
-    }
-
-    if (!htmlLimpio) return res.status(503).send("Ninguna de las extensiones está respondiendo. Intentá más tarde.");
-
-    // CORRECCIÓN ACÁ: Eliminadas las barras invertidas duplicadas que rompían Node.js
-    htmlLimpio = htmlLimpio.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gi, function(match, content) {
-        if (content.includes('pop') || content.includes('ads') || content.includes('adsterra') || content.includes('analytics')) {
-            return '';
-        }
-        return match;
-    });
-
-    // Inyección del escudo de seguridad para congelar popups en el navegador de la tele
-    const escudo = `<script>window.open = function() { return null; };</script>`;
-    htmlLimpio = htmlLimpio.replace('</head>', `${escudo}</head>`);
-
-    res.send(htmlLimpio);
-});
-
-app.listen(PORT, () => console.log(`Servidor de streaming activo de forma gratuita`));
+app.listen(PORT, () => console.log(`Servidor StreamBro activo en puerto ${PORT}`));
