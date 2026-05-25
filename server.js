@@ -3,23 +3,23 @@ const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// DIRECTORIO 100% VERIFICADO: Dominios reales que responden hoy al raspado
+// DIRECTORIO 100% VERIFICADO: El búnker con los links reales que encontraste
 const DIRECTORIO_SITIOS = {
     cinecalidad: [
-        'https://cinecalidad.rs',
-        'https://cinecalidad.pro'
+        'https://www.cinecalidad.am', // Verificado por Nelson 🌟
+        'https://cinecalidad.rs'
     ],
     cuevana: [
-        'https://cuevana3.mu',
-        'https://cuevana3.eu'
+        'https://www.cuevana8.plus',  // Verificado por Nelson 🌟
+        'https://cuevana3.mu'
     ],
     pelisplus: [
-        'https://pelisplus.so',
-        'https://pelisplus.tl'
+        'https://pelisplus.autos',   // Verificado por Nelson 🌟
+        'https://pelisplus.so'
     ],
     gnula: [
-        'https://gnula.se',
-        'https://gnula.su'
+        'https://wnv5.gnula.cc',     // ¡Tu nuevo link verificado de GNula!
+        'https://gnula.se'
     ]
 };
 
@@ -65,7 +65,7 @@ app.get('/', (req, res) => {
                 padding: 25px 30px; font-size: 22px; font-weight: bold; border-radius: 10px; 
                 cursor: pointer; width: 220px; transition: 0.2s; text-decoration: none; display: inline-block; box-sizing: border-box;
             }
-            /* Enfoque para el control remoto */
+            /* Enfoque para usar con el teclado o control remoto */
             .boton-tv:focus, .boton-tv.focused { 
                 border-color: #fff; background-color: #E50914; transform: scale(1.08); outline: none; box-shadow: 0 0 15px #E50914;
             }
@@ -89,7 +89,7 @@ app.get('/', (req, res) => {
         </div>
 
         <script>
-            // Manejo del tiempo de la intro (4.5 segundos)
+            // Tiempo de la intro (4.5 segundos)
             setTimeout(() => {
                 const splash = document.getElementById('splash');
                 const contenido = document.getElementById('contenido-tv');
@@ -100,7 +100,7 @@ app.get('/', (req, res) => {
                 setTimeout(() => { splash.style.display = 'none'; }, 1500);
             }, 4500);
 
-            // Control de navegación por flechas para el control remoto / teclado
+            // Control de navegación por flechas
             let botones = document.querySelectorAll('.boton-tv');
             let idx = 0;
             document.addEventListener('keydown', (e) => {
@@ -118,7 +118,7 @@ app.get('/', (req, res) => {
     `);
 });
 
-// RUTA 2: El purificador inteligente que extrae el HTML y limpia la porquería
+// RUTA 2: El raspador que clona la web por detrás y le vuela los anuncios molestos
 app.get('/ver', async (req, res) => {
     const sitioElegido = req.query.sitio;
     const dominiosDisponibles = DIRECTORIO_SITIOS[sitioElegido];
@@ -127,26 +127,27 @@ app.get('/ver', async (req, res) => {
 
     let htmlLimpio = null;
 
-    // Bucle de auxilio por si algún dominio de la lista se cae o da error de DNS
+    // Bucle para recorrer las opciones si alguna se cae
     for (const url of dominiosDisponibles) {
         try {
             const respuesta = await axios.get(url, {
                 headers: { 
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept-Language': 'es-ES,es;q=0.9'
+                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                    'Accept-Language': 'es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3'
                 },
-                timeout: 6000 // 6 segundos de espera antes de saltar al siguiente dominio de la lista
+                timeout: 5000 // 5 segundos de espera antes de cambiar de link
             });
             htmlLimpio = respuesta.data;
             break; 
         } catch (error) {
-            console.log(`Error en ${url}, saltando a extensión alternativa de la lista...`);
+            console.log(`Error al raspar ${url}, intentando otra opción...`);
         }
     }
 
-    if (!htmlLimpio) return res.status(503).send("Ninguna de las extensiones está respondiendo en este momento. Intentá más tarde.");
+    if (!htmlLimpio) return res.status(503).send("El servidor no pudo clonar ninguna de las webs en este momento.");
 
-    // Extirpación quirúrgica de scripts de publicidad y pop-ups molestos (Corregido sin barras duplicadas)
+    // LIMPIADOR DE PUBLICIDAD: Remueve scripts molestos de anuncios y popups
     htmlLimpio = htmlLimpio.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gi, function(match, content) {
         if (content.includes('pop') || content.includes('ads') || content.includes('adsterra') || content.includes('analytics') || content.includes('onclick')) {
             return '';
@@ -154,11 +155,11 @@ app.get('/ver', async (req, res) => {
         return match;
     });
 
-    // Inyección del escudo de seguridad para congelar popups e interceptar ventanas nuevas
+    // ESCUDO PROTECTOR: Bloquea ventanas emergentes
     const escudo = `<script>window.open = function() { return null; };</script>`;
     htmlLimpio = htmlLimpio.replace('</head>', `${escudo}</head>`);
 
     res.send(htmlLimpio);
 });
 
-app.listen(PORT, () => console.log(`Servidor de streaming StreamBro activo de forma gratuita`));
+app.listen(PORT, () => console.log(`StreamBro corriendo con links estables en puerto ${PORT}`));
