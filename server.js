@@ -11,16 +11,14 @@ const DIRECTORIO_SITIOS = {
     ],
     cuevana: [
         'https://www.cuevana8.plus',  // Verificado por Nelson 🌟
-        'https://cuevana3.mu'
+        'https://cuevana.cz'
     ],
     pelisplus: [
         'https://pelisplus.autos',   // Verificado por Nelson 🌟
-        'https://pelisplus.so'
-    ],
+            ],
     gnula: [
         'https://wnv5.gnula.cc',     // ¡Tu nuevo link verificado de GNula!
-        'https://gnula.se'
-    ]
+            ]
 };
 
 // RUTA 1: Menú Principal con Presentación Especial para Aye ❤️
