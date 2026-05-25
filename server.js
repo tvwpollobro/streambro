@@ -60,10 +60,10 @@ app.get('/', (req, res) => {
         <div class="main-content" id="contenido-tv">
             <h1>STREAMBRO - SELECCIONÁ UN SERVIDOR</h1>
             <div class="grid">
-                <a href="https://www.cinecalidad.gg" class="boton-tv focused" tabindex="1">CineCalidad</a>
-                <a href="https://cuevana3.ch" class="boton-tv" tabindex="2">Cuevana 3</a>
-                <a href="https://pelisplus.to" class="boton-tv" tabindex="3">PelisPlus</a>
-                <a href="https://gnula.nu" class="boton-tv" tabindex="4">GNula</a>
+                <a href="https://cinecalidad.to" class="boton-tv focused" tabindex="1">CineCalidad</a>
+                <a href="https://cuevana.biz" class="boton-tv" tabindex="2">Cuevana 3</a>
+                <a href="https://pelisplus.so" class="boton-tv" tabindex="3">PelisPlus</a>
+                <a href="https://gnula.se" class="boton-tv" tabindex="4">GNula</a>
             </div>
         </div>
 
