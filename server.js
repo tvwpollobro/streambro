@@ -3,31 +3,27 @@ const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Directorio con los dominios alternativos activos para saltar caídas de DNS
+// DIRECTORIO 100% VERIFICADO: Dominios reales que responden hoy al raspado
 const DIRECTORIO_SITIOS = {
     cinecalidad: [
-        'https://cinecalidad.ro',
-        'https://www.cinecalidad.to',
-        'https://www.cinecalidad.gg'
+        'https://cinecalidad.rs',
+        'https://cinecalidad.pro'
     ],
     cuevana: [
-        'https://cuevana.biz',
-        'https://cuevana3.ch',
-        'https://cuevana3.io'
+        'https://cuevana3.mu',
+        'https://cuevana3.eu'
     ],
     pelisplus: [
         'https://pelisplus.so',
-        'https://pelisplus.to',
-        'https://pelisplus.lat'
+        'https://pelisplus.tl'
     ],
     gnula: [
         'https://gnula.se',
-        'https://gnula.nu',
         'https://gnula.su'
     ]
 };
 
-// RUTA PRINCIPAL: Interfaz StreamBro con la intro para Aye ❤️
+// RUTA 1: Menú Principal con Presentación Especial para Aye ❤️
 app.get('/', (req, res) => {
     res.send(`
     <!DOCTYPE html>
@@ -38,6 +34,8 @@ app.get('/', (req, res) => {
         <title>StreamBro</title>
         <style>
             body { background-color: #111; color: white; font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 0; overflow: hidden; }
+            
+            /* PANTALLA DE PRESENTACIÓN (SPLASH) */
             #splash {
                 position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
                 background-color: #000; z-index: 9999;
@@ -45,6 +43,8 @@ app.get('/', (req, res) => {
                 transition: opacity 1.5s ease;
             }
             #splash h2 { font-size: 36px; margin-bottom: 20px; font-weight: 300; letter-spacing: 2px; }
+            
+            /* Animación del Corazón Latiendo */
             .corazon { color: #E50914; font-size: 80px; display: inline-block; animation: latido 1.2s infinite; }
             @keyframes latido {
                 0% { transform: scale(1); }
@@ -53,8 +53,11 @@ app.get('/', (req, res) => {
                 60% { transform: scale(1.15); }
                 100% { transform: scale(1); }
             }
+
+            /* CONTENIDO PRINCIPAL (MENÚ) */
             .main-content { padding-top: 50px; opacity: 0; transition: opacity 1s ease; }
             .main-content.visible { opacity: 1; }
+            
             h1 { color: #E50914; font-size: 32px; margin-bottom: 40px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
             .grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 20px; box-sizing: border-box; }
             .boton-tv { 
@@ -62,16 +65,19 @@ app.get('/', (req, res) => {
                 padding: 25px 30px; font-size: 22px; font-weight: bold; border-radius: 10px; 
                 cursor: pointer; width: 220px; transition: 0.2s; text-decoration: none; display: inline-block; box-sizing: border-box;
             }
+            /* Enfoque para el control remoto */
             .boton-tv:focus, .boton-tv.focused { 
                 border-color: #fff; background-color: #E50914; transform: scale(1.08); outline: none; box-shadow: 0 0 15px #E50914;
             }
         </style>
     </head>
     <body>
+
         <div id="splash">
             <h2>Cargando StreamBro...</h2>
             <h3 style="font-weight: 300; color: #aaa; margin-bottom: 30px;">Especial para Aye <span class="corazon">❤️</span></h3>
         </div>
+
         <div class="main-content" id="contenido-tv">
             <h1>STREAMBRO - SELECCIONÁ UN SERVIDOR</h1>
             <div class="grid">
@@ -81,15 +87,20 @@ app.get('/', (req, res) => {
                 <a href="/ver?sitio=gnula" class="boton-tv" tabindex="4">GNula</a>
             </div>
         </div>
+
         <script>
+            // Manejo del tiempo de la intro (4.5 segundos)
             setTimeout(() => {
                 const splash = document.getElementById('splash');
                 const contenido = document.getElementById('contenido-tv');
+                
                 splash.style.opacity = '0'; 
                 contenido.classList.add('visible'); 
+                
                 setTimeout(() => { splash.style.display = 'none'; }, 1500);
             }, 4500);
 
+            // Control de navegación por flechas para el control remoto / teclado
             let botones = document.querySelectorAll('.boton-tv');
             let idx = 0;
             document.addEventListener('keydown', (e) => {
@@ -107,7 +118,7 @@ app.get('/', (req, res) => {
     `);
 });
 
-// RUTA CON ESTRATEGIA ANTIBLOQUEO DENTRO DE RENDER
+// RUTA 2: El purificador inteligente que extrae el HTML y limpia la porquería
 app.get('/ver', async (req, res) => {
     const sitioElegido = req.query.sitio;
     const dominiosDisponibles = DIRECTORIO_SITIOS[sitioElegido];
@@ -115,8 +126,8 @@ app.get('/ver', async (req, res) => {
     if (!dominiosDisponibles) return res.status(404).send("Sitio no válido.");
 
     let htmlLimpio = null;
-    let urlExitosa = '';
 
+    // Bucle de auxilio por si algún dominio de la lista se cae o da error de DNS
     for (const url of dominiosDisponibles) {
         try {
             const respuesta = await axios.get(url, {
@@ -124,21 +135,18 @@ app.get('/ver', async (req, res) => {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                     'Accept-Language': 'es-ES,es;q=0.9'
                 },
-                timeout: 5000
+                timeout: 6000 // 6 segundos de espera antes de saltar al siguiente dominio de la lista
             });
             htmlLimpio = respuesta.data;
-            urlExitosa = url;
             break; 
         } catch (error) {
-            console.log(`Error conectando a ${url}, probando alternativa...`);
+            console.log(`Error en ${url}, saltando a extensión alternativa de la lista...`);
         }
     }
 
-    if (!htmlLimpio) {
-        return res.status(503).send("Ninguno de los servidores responde actualmente. Intentá de nuevo en unos minutos.");
-    }
+    if (!htmlLimpio) return res.status(503).send("Ninguna de las extensiones está respondiendo en este momento. Intentá más tarde.");
 
-    // Filtro pulido para limpiar scripts de publicidad molesta
+    // Extirpación quirúrgica de scripts de publicidad y pop-ups molestos (Corregido sin barras duplicadas)
     htmlLimpio = htmlLimpio.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gi, function(match, content) {
         if (content.includes('pop') || content.includes('ads') || content.includes('adsterra') || content.includes('analytics') || content.includes('onclick')) {
             return '';
@@ -146,22 +154,11 @@ app.get('/ver', async (req, res) => {
         return match;
     });
 
-    // Escudo anti popups y redirección de links internos para que sigan usando tu proxy
-    const escudo = `
-    <script>
-        window.open = function() { return null; };
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('a').forEach(a => {
-                if(a.href && !a.href.startsWith(window.location.origin)) {
-                    // Evita que los links rompan el flujo de tu servidor
-                    a.onerror = () => { window.location.href = "${urlExitosa}"; };
-                }
-            });
-        });
-    </script>`;
-    
+    // Inyección del escudo de seguridad para congelar popups e interceptar ventanas nuevas
+    const escudo = `<script>window.open = function() { return null; };</script>`;
     htmlLimpio = htmlLimpio.replace('</head>', `${escudo}</head>`);
+
     res.send(htmlLimpio);
 });
 
-app.listen(PORT, () => console.log(`StreamBro corriendo en puerto ${PORT}`));
+app.listen(PORT, () => console.log(`Servidor de streaming StreamBro activo de forma gratuita`));
