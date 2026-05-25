@@ -1,7 +1,7 @@
 {
   "name": "streambro",
   "version": "1.0.0",
-  "description": "Proxy purificador StreamBro",
+  "description": "Proxy purificador StreamBro completo",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
